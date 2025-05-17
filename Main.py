@@ -1,5 +1,6 @@
 import DBS
 import tkinter as tk
+from tkinter import messagebox
 
 class F5ICTSBAApp:
     def __init__(self, master):
@@ -42,4 +43,6 @@ class F5ICTSBAApp:
 if __name__ == "__main__":
     root = tk.Tk()
     app = F5ICTSBAApp(root)
+    if DBS.checking() == True:
+        messagebox.showwarning("Warning", "Database needs to be updated")
     root.mainloop()
