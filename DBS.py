@@ -5,9 +5,9 @@ current_date = datetime.now()
 
 connection = sqlite3.connect(r'Database\EMEAS.db')
 
+cursor = connection.cursor()
 
 def checking():
-    cursor = connection.cursor()
     cursor.execute("SELECT MAX(dt) FROM metadata")
     largest_dt = cursor.fetchone()[0]
 
@@ -15,6 +15,9 @@ def checking():
         return True
     else:
         return False
+        
+cursor.close()
+connection.close()
 
-# connection.close()
+
 
