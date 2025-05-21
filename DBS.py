@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 def checking():
     current_date = datetime.now()
-    connection = sqlite3.connect(r'Database\EMEAS.db')
+    connection = sqlite3.connect('EMEAS.db')
     cursor = connection.cursor()
     cursor.execute("SELECT MAX(dt) FROM metadata")
     largest_dt = cursor.fetchone()[0]
