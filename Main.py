@@ -97,7 +97,7 @@ class UploadExcelPage:
                  ).pack()
         
         submit_button = tk.Button(
-            self,
+            container,
             text="Submit",
             font=("Arial", 14),
             command=self.on_submit
@@ -133,7 +133,7 @@ class UploadExcelPage:
         else:
             messagebox.showinfo("No file selected", "No Subjects file was selected.")
     
-    def on_submit():
+    def on_submit(self):
         pass
 
 if __name__ == "__main__":
