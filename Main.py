@@ -136,7 +136,30 @@ class UploadExcelPage:
     
     def on_submit(self):
         # DBS.sqlrun("delete from Students")
-        pass
+        df = pd.read_excel(self.students_file_var.get())
+        for index, row in df.iterrows():
+            sid = ['SID']
+            class_ = ['Class']
+            name = ['Name']
+            cno = ['CNO']
+        try:
+            DBS.sqlrun("insert into Students (SID, Class, Name, CNO) values ", (sid, class_, name, cno))
+            messagebox.showinfo("Success", "Students table successfully updated")
+        except:
+            messagebox.showerror("Error", "Error updating Students table")
+        
+        # DBS.sqlrun("delete from Subjects")
+        df = pd.read_excel(self.subjects_file_var.get())
+        for index, row in df.iterrows():
+            sid = ['SID']
+            class_ = ['Class']
+            name = ['Name']
+            cno = ['CNO']
+        try:
+            DBS.sqlrun("insert into Subjects (SID, Class, Name, CNO) values ", (sid, class_, name, cno))
+            messagebox.showinfo("Success", "Subjects table successfully updated")
+        except:
+            messagebox.showerror("Error", "Error updating Subjects table")
 
 if __name__ == "__main__":
     root = tk.Tk()
