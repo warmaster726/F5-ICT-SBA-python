@@ -1,4 +1,5 @@
 import DBS
+import pandas as pd
 import tkinter as tk
 from tkinter import messagebox, filedialog
 
@@ -134,6 +135,7 @@ class UploadExcelPage:
             messagebox.showinfo("No file selected", "No Subjects file was selected.")
     
     def on_submit(self):
+        # DBS.sqlrun("delete from Students")
         pass
 
 if __name__ == "__main__":

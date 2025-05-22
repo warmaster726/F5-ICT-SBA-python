@@ -16,5 +16,11 @@ def checking():
     else:
         return False
     
-
+def sqlrun(query, params=()):
+    connection = sqlite3.connect('EMEAS.db')
+    cursor = connection.cursor()
+    cursor.execute(query, params)
+    connection.commit()
+    cursor.close()
+    connection.close()
 
