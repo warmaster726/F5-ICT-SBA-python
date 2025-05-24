@@ -11,7 +11,7 @@ def checking():
     cursor.close()
     connection.close()
 
-    if current_date - timedelta(days=330) >= datetime.strptime(largest_dt, "%Y-%m-%d"):
+    if current_date - timedelta(days=330) >= datetime.strptime(largest_dt, "%Y-%m-%d %H:%M:%S"):
         return True
     else:
         return False
@@ -20,6 +20,7 @@ def sqlrun(query, params=()):
     connection = sqlite3.connect('EMEAS.db')
     cursor = connection.cursor()
     cursor.execute(query, params)
+
     connection.commit()
     cursor.close()
     connection.close()
