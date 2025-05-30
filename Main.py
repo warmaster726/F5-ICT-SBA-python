@@ -1,4 +1,4 @@
-import DBS
+import DBS, UMS
 import pandas as pd
 import openpyxl
 import tkinter as tk
@@ -38,7 +38,14 @@ class F5ICTSBAApp:
             command=self.UDBS
         ).grid(row=0, column=0, padx=8, pady=8, sticky="nsew")
 
-        for i in range(1,4):
+        tk.Button(
+            button_container,
+            text=f"Upload Marksheets",
+            font=("Arial", 16),
+            command=self.UMS
+        ).grid(row=0, column=1, padx=8, pady=8, sticky="nsew")
+
+        for i in range(2,4):
             tk.Button(
                 button_container,
                 text=f"Button {i + 1}",
@@ -52,6 +59,10 @@ class F5ICTSBAApp:
     def UDBS(self):
         self.frame.destroy()
         UploadExcelPage(self.master)
+
+    def UMS(self):
+        self.frame.destroy()
+        UMS.MarkSheetImportPage(self.master)
 
 class UploadExcelPage:
     def __init__(self, master):
