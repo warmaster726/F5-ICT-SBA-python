@@ -21,6 +21,9 @@ def sqlrun(query, params=()):
     cursor = connection.cursor()
     cursor.execute(query, params)
 
+    if query.strip().lower().startswith('select'):
+        return cursor.fetchall()
+
     connection.commit()
     cursor.close()
     connection.close()
