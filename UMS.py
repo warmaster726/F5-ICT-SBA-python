@@ -140,7 +140,10 @@ class MarkSheetImportPage:
                 student_id = row['StudentID']
                 mark = row['Mark']
                 DBS.sqlrun(
-                    "insert into MarkSheet (Year, Term, Exam, Subject, Papers, StudentID, Mark) values (?, ?, ?, ?, ?, ?, ?)",
+                    "create table if not exists ?-? (Subject varchar(255) primary key not null, Papers Integer primary key not null, SID varchar(255) primary key not null, Mark int)", 
+                    (year, term))
+                DBS.sqlrun(
+                    "insert into ?-? (Exam, Subject, Papers, SID, Mark) values (?, ?, ?, ?, ?)",
                     (year, term, exam, subject, papers, student_id, mark)
                 )
         except Exception as e:
