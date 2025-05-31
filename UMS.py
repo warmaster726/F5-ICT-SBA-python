@@ -58,6 +58,7 @@ class MarkSheetImportPage:
         self.subject_var = tk.StringVar()
         self.subject_var.set(" --- ")
         exam_options = DBS.sqlrun("Select SubCode from Subjects;")
+        exam_options = [row[0] for row in exam_options]
         tk.OptionMenu(self.frame, self.subject_var, *exam_options)\
             .grid(row=4, column=1, sticky="w", padx=8, pady=8)
 
@@ -135,24 +136,28 @@ class MarkSheetImportPage:
 
         # Insert each record from the marksheet into the database.
         # Assumption: The Excel file has columns "StudentID" and "Mark".
+        # Create the table once (if not exists) outside the loop
+        tb_name = f"exam_{year_str}_{term}"
+        DBS.sqlrun(
+            f"CREATE TABLE IF NOT EXISTS {tb_name} (Exam varchar(255) NOT NULL, Subject varchar(255) NOT NULL, Papers Integer NOT NULL, SID char(5) NOT NULL, Mark Integer, PRIMARY KEY (Subject, Papers, SID))", ()
+            )
+
         try:
+            # Now insert each record from the marksheet
             for index, row in df.iterrows():
-                student_id = row['StudentID']
-                mark = row['Mark']
+                student_id = str(row['StudentID'])
+                mark = int(row['Mark'])
                 DBS.sqlrun(
-                    "create table if not exists ?-? (Subject varchar(255) primary key not null, Papers Integer primary key not null, SID varchar(255) primary key not null, Mark int)", 
-                    (year, term))
-                DBS.sqlrun(
-                    "insert into ?-? (Exam, Subject, Papers, SID, Mark) values (?, ?, ?, ?, ?)",
-                    (year, term, exam, subject, papers, student_id, mark)
+                    f"INSERT INTO {tb_name} (Exam, Subject, Papers, SID, Mark) VALUES (?, ?, ?, ?, ?)",
+                    (exam, subject, papers, student_id, mark)
                 )
+
         except Exception as e:
             messagebox.showerror("Error", f"Error updating MarkSheet table: {e}")
-            return
+            return  # Make sure this return is inside a function or method
 
         messagebox.showinfo("Success", "Marksheet successfully updated.")
         self.frame.destroy()
-        # You can navigate back to a main dashboard or reset the form here
 
 if __name__ == "__main__":
     root = tk.Tk()
