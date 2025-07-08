@@ -1,7 +1,7 @@
 @echo off
-pip install pip --upgrade
-pip install pandas --upgrade
-pip install openpyxl --upgrade
+python -m pip install pip --upgrade
+python -m pip install pandas --upgrade
+python -m pip install openpyxl --upgrade
 cls
-rem Starting program, please wait...
-python Main.py
+rem Starting program silently, please wait...
+start "" pythonw "%~dp0Main.py"
