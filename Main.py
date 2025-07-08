@@ -126,7 +126,16 @@ class UploadExcelPage:
             font=("Arial", 14),
             command=self.on_submit
         )
-        submit_button.grid(row=1, column=0, columnspan=2, pady=20)
+        submit_button.grid(row=1, column=0, columnspan=2, pady=20, sticky="e")
+
+        return_button = tk.Button(
+            self.frame,
+            text="Return",
+            font=("Arial", 14),
+            command=self.on_return
+        )
+        return_button.grid(row=1, column=1, pady=20, sticky="w")
+
 
 
     def browse_students_file(self):
@@ -156,6 +165,10 @@ class UploadExcelPage:
             self.subjects_file_var.set(file_path_subjects)
         else:
             messagebox.showinfo("No file selected", "No Subjects file was selected.")
+
+    def on_return(self):
+        self.frame.destroy()
+        F5ICTSBAApp(self.master)
     
     def on_submit(self):
         if self.students_file_var.get() and self.subjects_file_var.get():
@@ -189,8 +202,7 @@ class UploadExcelPage:
             messagebox.showinfo("Success", "Subjects table successfully updated")
 
             # After successful submission, return to the main page:
-            self.frame.destroy()
-            F5ICTSBAApp(self.master)
+            self.on_return()
         else:
             messagebox.showerror("Error", "Please select both Students and Subjects Excel files")
 
