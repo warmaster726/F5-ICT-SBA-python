@@ -17,7 +17,7 @@ class F5ICTSBAApp:
         # Header label
         tk.Label(
             self.frame,
-            text="F5 ICT SBA",
+            text="EMEAS dev-0.0.16",
             font=("Arial", 32, "bold")
         ).pack(pady=(0, 20))
 
