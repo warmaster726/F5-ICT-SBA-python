@@ -4,4 +4,4 @@ python -m pip install pandas --upgrade
 python -m pip install openpyxl --upgrade
 cls
 rem Starting program silently, please wait...
-start "" pythonw "%~dp0Main.py"
+start "" pythonw "Main.py"

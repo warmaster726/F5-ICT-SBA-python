@@ -1,57 +1,70 @@
-import DBS, UMS
+import DBS, UMS, ACS
 import pandas as pd
 import openpyxl
 import tkinter as tk
 from tkinter import messagebox, filedialog
+
+# Dark mode color palette
+DARK_BG        = "#2e2e2e"
+PANEL_BG       = "#2e2e2e"
+ENTRY_BG       = "#3e3e3e"
+BTN_BG         = "#4d4d4d"
+BTN_ACTIVE_BG  = "#5e5e5e"
+TEXT_FG        = "#FFFFFF"
+FRAME_BG = DARK_BG
+
+# Standard fonts
+FONT_HEADER = ("Segoe UI", 32, "bold")
+FONT_BTN    = ("Segoe UI", 16)
+FONT_SUB    = ("Segoe UI", 16, "bold")
+FONT_SMALL  = ("Segoe UI", 12)
 
 class F5ICTSBAApp:
     def __init__(self, master):
         self.master = master
         master.title("F5-ICT-SBA")
         master.minsize(800, 600)
+        master.configure(bg=DARK_BG)
 
-        # Main self.frame with padding
-        self.frame = tk.Frame(master, padx=16, pady=16)
+        # Main frame
+        self.frame = tk.Frame(master, bg=FRAME_BG, padx=16, pady=16)
         self.frame.pack(fill="both", expand=True)
 
-        # Header label
+        # Header
         tk.Label(
             self.frame,
-            text="EMEAS dev-0.0.16",
-            font=("Arial", 32, "bold")
+            text="EMEAS dev-0.0.18",
+            font=FONT_HEADER,
+            bg=PANEL_BG,
+            fg=TEXT_FG
         ).pack(pady=(0, 20))
 
-        # Button grid self.frame
-        button_container = tk.Frame(self.frame)
+        # Button grid container
+        button_container = tk.Frame(self.frame, bg=PANEL_BG)
         button_container.pack(expand=True, fill="both")
 
-        # Configure grid layout (2x2)
         for i in range(2):
             button_container.grid_rowconfigure(i, weight=1)
             button_container.grid_columnconfigure(i, weight=1)
 
-        # Create four buttons
-        tk.Button(
-            button_container,
-            text=f"Update Database",
-            font=("Arial", 16),
-            command=self.UDBS
-        ).grid(row=0, column=0, padx=8, pady=8, sticky="nsew")
-
-        tk.Button(
-            button_container,
-            text=f"Upload Marksheets",
-            font=("Arial", 16),
-            command=self.UMS
-        ).grid(row=0, column=1, padx=8, pady=8, sticky="nsew")
-
-        for i in range(2,4):
-            tk.Button(
+        # Primary buttons
+        def make_btn(text, cmd, row, col):
+            return tk.Button(
                 button_container,
-                text=f"Button {i + 1}",
-                font=("Arial", 16),
-                command=lambda i=i: self.on_click(i)
-            ).grid(row=i // 2, column=i % 2, padx=8, pady=8, sticky="nsew")
+                text=text,
+                font=FONT_BTN,
+                bg=BTN_BG,
+                fg=TEXT_FG,
+                activebackground=BTN_ACTIVE_BG,
+                activeforeground=TEXT_FG,
+                relief="flat",
+                command=cmd
+            ).grid(row=row, column=col, padx=8, pady=8, sticky="nsew")
+
+        make_btn("Update Database", self.UDBS, 0, 0)
+        make_btn("Upload Marksheets", self.UMS, 0, 1)
+        make_btn("Start calculations", self.SumAvg, 1, 0)
+        make_btn("Button 4", lambda: self.on_click(3), 1, 1)
 
     def on_click(self, index):
         print(f"Button {index + 1} clicked!")
@@ -64,153 +77,182 @@ class F5ICTSBAApp:
         self.frame.destroy()
         UMS.MarkSheetImportPage(self.master)
 
+    def SumAvg(self):
+        self.frame.destroy()
+        ACS.SumAvg(self.master)
+
+
 class UploadExcelPage:
     def __init__(self, master):
         self.master = master
         master.title("Upload Excel Files")
         master.minsize(600, 300)
+        master.configure(bg=DARK_BG)
 
-        # Main self.frame with padding
-        self.frame = tk.Frame(master, padx=16, pady=16)
+        self.frame = tk.Frame(master, bg=FRAME_BG, padx=16, pady=16)
         self.frame.pack(fill="both", expand=True)
 
-        # Configure self.frame for two columns of equal weight
+        # Two-column layout
         self.frame.grid_columnconfigure(0, weight=1)
         self.frame.grid_columnconfigure(1, weight=1)
 
-        # --- Left Column: Students Table ---
-        student_frame = tk.Frame(self.frame, relief="groove", borderwidth=2, padx=10, pady=10)
+        # Left panel: Students
+        student_frame = tk.Frame(self.frame, bg=PANEL_BG, relief="groove", borderwidth=2, padx=10, pady=10)
         student_frame.grid(row=0, column=0, sticky="nsew", padx=8, pady=8)
 
-        # Header for the Students panel
-        tk.Label(student_frame,
-                 text="Students Table (Excel)",
-                 font=("Arial", 16, "bold")
-                ).pack(pady=(0, 10))
+        tk.Label(
+            student_frame,
+            text="Students Table (Excel)",
+            font=FONT_SUB,
+            bg=PANEL_BG,
+            fg=TEXT_FG
+        ).pack(pady=(0, 10))
 
-        # Entry field to display the chosen file path
         self.students_file_var = tk.StringVar()
-        tk.Entry(student_frame, textvariable=self.students_file_var, width=40).pack(pady=(0, 5))
+        tk.Entry(
+            student_frame,
+            textvariable=self.students_file_var,
+            width=40,
+            bg=ENTRY_BG,
+            fg=TEXT_FG,
+            insertbackground=TEXT_FG
+        ).pack(pady=(0, 5))
 
-        # Browse button for Students table file selection
-        tk.Button(student_frame,
-                  text="Browse",
-                  font=("Arial", 12),
-                  command=self.browse_students_file
-                 ).pack()
+        tk.Button(
+            student_frame,
+            text="Browse",
+            font=FONT_SMALL,
+            bg=BTN_BG,
+            fg=TEXT_FG,
+            activebackground=BTN_ACTIVE_BG,
+            activeforeground=TEXT_FG,
+            relief="flat",
+            command=self.browse_students_file
+        ).pack()
 
-        # --- Right Column: Subjects Table ---
-        subject_frame = tk.Frame(self.frame, relief="groove", borderwidth=2, padx=10, pady=10)
+        # Right panel: Subjects
+        subject_frame = tk.Frame(self.frame, bg=PANEL_BG, relief="groove", borderwidth=2, padx=10, pady=10)
         subject_frame.grid(row=0, column=1, sticky="nsew", padx=8, pady=8)
 
-        # Header for the Subjects panel
-        tk.Label(subject_frame,
-                 text="Subjects Table (Excel)",
-                 font=("Arial", 16, "bold")
-                ).pack(pady=(0, 10))
+        tk.Label(
+            subject_frame,
+            text="Subjects Table (Excel)",
+            font=FONT_SUB,
+            bg=PANEL_BG,
+            fg=TEXT_FG
+        ).pack(pady=(0, 10))
 
-        # Entry field to display the chosen file path
         self.subjects_file_var = tk.StringVar()
-        tk.Entry(subject_frame, textvariable=self.subjects_file_var, width=40).pack(pady=(0, 5))
+        tk.Entry(
+            subject_frame,
+            textvariable=self.subjects_file_var,
+            width=40,
+            bg=ENTRY_BG,
+            fg=TEXT_FG,
+            insertbackground=TEXT_FG
+        ).pack(pady=(0, 5))
 
-        # Browse button for Subjects table file selection
-        tk.Button(subject_frame,
-                  text="Browse",
-                  font=("Arial", 12),
-                  command=self.browse_subjects_file
-                 ).pack()
-        
-        submit_button = tk.Button(
+        tk.Button(
+            subject_frame,
+            text="Browse",
+            font=FONT_SMALL,
+            bg=BTN_BG,
+            fg=TEXT_FG,
+            activebackground=BTN_ACTIVE_BG,
+            activeforeground=TEXT_FG,
+            relief="flat",
+            command=self.browse_subjects_file
+        ).pack()
+
+        # Submit & Return buttons
+        tk.Button(
             self.frame,
             text="Submit",
-            font=("Arial", 14),
+            font=FONT_BTN,
+            bg=BTN_BG,
+            fg=TEXT_FG,
+            activebackground=BTN_ACTIVE_BG,
+            activeforeground=TEXT_FG,
+            relief="flat",
             command=self.on_submit
-        )
-        submit_button.grid(row=1, column=0, columnspan=2, pady=20, sticky="e")
+        ).grid(row=1, column=0, pady=20, sticky="e")
 
-        return_button = tk.Button(
+        tk.Button(
             self.frame,
             text="Return",
-            font=("Arial", 14),
+            font=FONT_BTN,
+            bg=BTN_BG,
+            fg=TEXT_FG,
+            activebackground=BTN_ACTIVE_BG,
+            activeforeground=TEXT_FG,
+            relief="flat",
             command=self.on_return
-        )
-        return_button.grid(row=1, column=1, pady=20, sticky="w")
-
-
+        ).grid(row=1, column=1, pady=20, sticky="w")
 
     def browse_students_file(self):
-        """
-        Opens a file dialog to select an Excel file for the Students table.
-        The file dialog now accepts .xlsx, .xls, and .xlsm files.
-        """
-        file_path_students = filedialog.askopenfilename(
+        path = filedialog.askopenfilename(
             title="Select Students Excel File",
             filetypes=[("Excel files", "*.xlsx *.xls *.xlsm")]
         )
-        if file_path_students:
-            self.students_file_var.set(file_path_students)
+        if path:
+            self.students_file_var.set(path)
         else:
             messagebox.showinfo("No file selected", "No Students file was selected.")
 
     def browse_subjects_file(self):
-        """
-        Opens a file dialog to select an Excel file for the Subjects table.
-        The file dialog now accepts .xlsx, .xls, and .xlsm files.
-        """
-        file_path_subjects = filedialog.askopenfilename(
+        path = filedialog.askopenfilename(
             title="Select Subjects Excel File",
             filetypes=[("Excel files", "*.xlsx *.xls *.xlsm")]
         )
-        if file_path_subjects:
-            self.subjects_file_var.set(file_path_subjects)
+        if path:
+            self.subjects_file_var.set(path)
         else:
             messagebox.showinfo("No file selected", "No Subjects file was selected.")
 
     def on_return(self):
         self.frame.destroy()
         F5ICTSBAApp(self.master)
-    
-    def on_submit(self):
-        if self.students_file_var.get() and self.subjects_file_var.get():
-            # Process Students table
-            df = pd.read_excel(self.students_file_var.get())
-            for index, row in df.iterrows():
-                sid = row['SID']
-                class_ = row['Class']
-                name = row['Name']
-                cno = row['CNO']
-            try:
-                DBS.sqlrun("insert into Students (SID, Class, Name, CNO) values (?, ?, ?, ?)", (sid, class_, name, cno))
-                messagebox.showinfo("Success", "Students table successfully updated")
-            except Exception as e:
-                messagebox.showerror("Error", f"Error updating Students table: {e}")
-                return
 
-            # Process Subjects table
+    def on_submit(self):
+        if not self.students_file_var.get() or not self.subjects_file_var.get():
+            messagebox.showerror("Error", "Please select both Students and Subjects Excel files")
+            return
+
+        # Students import
+        try:
+            df_students = pd.read_excel(self.students_file_var.get())
+            for _, row in df_students.iterrows():
+                DBS.sqlrun(
+                    "insert into Students (SID, Class, Name, CNO) values (?, ?, ?, ?)",
+                    (row['SID'], row['Class'], row['Name'], row['CNO'])
+                )
+            messagebox.showinfo("Success", "Students table successfully updated")
+        except Exception as e:
+            messagebox.showerror("Error updating Students table", str(e))
+            return
+
+        # Subjects import
+        try:
             DBS.sqlrun("delete from Subjects")
             df_subjects = pd.read_excel(self.subjects_file_var.get())
-            for index, row in df_subjects.iterrows():
-                sid = row['SID']
-                class_ = row['Class']
-                name = row['Name']
-                cno = row['CNO']
-                try:
-                    DBS.sqlrun("insert into Subjects (SID, Class, Name, CNO) values (?, ?, ?, ?)", (sid, class_, name, cno))
-                except Exception as e:
-                    messagebox.showerror("Error", f"Error updating Subjects table: {e}")
-                    return
+            for _, row in df_subjects.iterrows():
+                DBS.sqlrun(
+                    "insert into Subjects (SID, Class, Name, CNO) values (?, ?, ?, ?)",
+                    (row['SID'], row['Class'], row['Name'], row['CNO'])
+                )
             messagebox.showinfo("Success", "Subjects table successfully updated")
+        except Exception as e:
+            messagebox.showerror("Error updating Subjects table", str(e))
+            return
 
-            # After successful submission, return to the main page:
-            self.on_return()
-        else:
-            messagebox.showerror("Error", "Please select both Students and Subjects Excel files")
+        self.on_return()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = F5ICTSBAApp(root)
-    if DBS.checking() == True:
+    if DBS.checking():
         messagebox.showwarning("Warning", "Database needs to be updated")
         app.frame.destroy()
-        app = UploadExcelPage(root)        
+        app = UploadExcelPage(root)
     root.mainloop()
