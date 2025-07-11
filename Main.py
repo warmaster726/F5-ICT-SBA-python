@@ -3,6 +3,7 @@ import pandas as pd
 import openpyxl
 import tkinter as tk
 from tkinter import messagebox, filedialog
+import datetime
 
 # Dark mode color palette
 DARK_BG        = "#2e2e2e"
@@ -33,7 +34,7 @@ class F5ICTSBAApp:
         # Header
         tk.Label(
             self.frame,
-            text="EMEAS dev-0.0.18",
+            text="EMEAS dev-0.0.21",
             font=FONT_HEADER,
             bg=PANEL_BG,
             fg=TEXT_FG
@@ -78,9 +79,24 @@ class F5ICTSBAApp:
         UMS.MarkSheetImportPage(self.master)
 
     def SumAvg(self):
+        year = datetime.datetime.now().year
+        pattern = f"exam_{year}%"
+        try:
+            rows = DBS.sqlrun(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE ?",
+                (pattern,)
+            )
+        except Exception as e:
+            messagebox.showerror("Error checking exam tables", str(e))
+            return
+        if not rows:
+            messagebox.showerror(
+                "Missing Exam Tables",
+                f"No tables found in the year of {year}"
+            )
+            return
         self.frame.destroy()
         ACS.SumAvg(self.master)
-
 
 class UploadExcelPage:
     def __init__(self, master):
