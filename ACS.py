@@ -22,6 +22,15 @@ class Student:
     def __init__(self, sid: str):
         self.sid = sid
         self.total = 0
+        self.count = 0
+        self.average = 0.0
+
+    def finalize(self):
+        if self.count > 0:
+            self.average = self.total / self.count
+        else:
+            self.average = 0
+
 
 class SumAvg:
     def __init__(self, master):
@@ -108,7 +117,7 @@ class SumAvg:
     def _build_output_area(self):
         tk.Label(
             self.frame,
-            text="SID    Total Marks",
+            text="SID    Total Marks    Average",
             font=FONT_LABEL,
             bg=FRAME_BG,
             fg=TEXT_FG
@@ -139,23 +148,26 @@ class SumAvg:
             return
 
         sid_rows = DBS.sqlrun("SELECT DISTINCT SID FROM Students;", ())
-        students = [Student(r[0]) for r in sid_rows]
+        students = {r[0] : Student(r[0]) for r in sid_rows}
 
         marks = DBS.sqlrun(f"SELECT SID, Mark FROM {tb};", ())
 
-        totals = {}
         for sid, mark in marks:
-            totals[sid] = totals.get(sid, 0) + (mark or 0)
+            student = students.get(sid)
+            if not student:
+                continue
+            student.total += mark
+            student.count += 1
 
-        for stu in students:
-            stu.total = totals.get(stu.sid, 0)
+        for stu in students.values():
+            stu.finalize()
 
         self.output.delete("1.0", tk.END)
         if not students:
             self.output.insert(tk.END, "No students found.\n")
         else:
-            for stu in students:
-                self.output.insert(tk.END, f"{stu.sid}\t{stu.total}\n")
+            for stu in students.values():
+                self.output.insert(tk.END, f"{stu.sid}\t{stu.total}\t{stu.average:.2f}\n")
 
         messagebox.showinfo("Complete", "All calculations are done.")
         self.return_to_main()
