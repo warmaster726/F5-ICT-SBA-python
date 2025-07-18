@@ -1,4 +1,4 @@
-import DBS, UMS, ACS
+import DBS, UMS, ACS, AROS
 import pandas as pd
 import openpyxl
 import tkinter as tk
@@ -65,10 +65,7 @@ class F5ICTSBAApp:
         make_btn("Update Database", self.UDBS, 0, 0)
         make_btn("Upload Marksheets", self.UMS, 0, 1)
         make_btn("Start calculations", self.SumAvg, 1, 0)
-        make_btn("Button 4", lambda: self.on_click(3), 1, 1)
-
-    def on_click(self, index):
-        print(f"Button {index + 1} clicked!")
+        make_btn("Report Generation", self.ReportOut, 1, 1)
 
     def UDBS(self):
         self.frame.destroy()
@@ -97,6 +94,10 @@ class F5ICTSBAApp:
             return
         self.frame.destroy()
         ACS.SumAvg(self.master)
+
+    def ReportOut(self):
+        self.frame.destroy()
+        AROS.ReportGenerator(self.master)
 
 class UploadExcelPage:
     def __init__(self, master):

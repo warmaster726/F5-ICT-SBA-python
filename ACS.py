@@ -50,14 +50,6 @@ class SumAvg:
             fg=TEXT_FG
         ).grid(row=0, column=0, columnspan=2, pady=(0, 20))
 
-        self._build_year_term_select()
-        self._build_buttons()
-        self._build_output_area()
-
-        for c in (0, 1):
-            self.frame.grid_columnconfigure(c, weight=1)
-
-    def _build_year_term_select(self):
         curr_year = datetime.now().year
         years = [str(y) for y in range(curr_year, curr_year - 5, -1)]
         self.year_var = tk.StringVar(value=years[0])
@@ -87,7 +79,6 @@ class SumAvg:
         )
         om_term.grid(row=2, column=1, sticky="w", padx=8, pady=8)
 
-    def _build_buttons(self):
         btn_calc = tk.Button(
             self.frame,
             text="Calculate",
@@ -114,7 +105,6 @@ class SumAvg:
         )
         btn_return.grid(row=3, column=1, pady=16, sticky="w", padx=8)
 
-    def _build_output_area(self):
         tk.Label(
             self.frame,
             text="SID    Total Marks    Average",
