@@ -142,6 +142,10 @@ class ReportGenerator:
 			return
 
 		table_name = f"exam_{year}_{term}"
+		paperlist = DBS.sqlrun(f"select distinct Subject, Papers from {table_name};", ())
+		paper_count = {subj: 0 for subj, papers in paperlist}
+		for subj, papers in paperlist:
+			paper_count[subj] += 1
 		for sid, Class, name, cno in stu_detail:
 			raw_marks = DBS.sqlrun(
 				f"SELECT Subject, Mark FROM {table_name} WHERE SID = ?;",
@@ -155,13 +159,13 @@ class ReportGenerator:
 				"sname":     name,
 				"class":     Class,
 				"CNO":       cno,
-				"chi_full":  "",
+				"chi_full":  str(paper_count.get("CHIN", 0)*100),
 				"chi_mark":  marks_dict.get("CHIN", ""),
-				"eng_full":  "",
+				"eng_full":  str(paper_count.get("ENG", 0)*100),
 				"eng_mark":  marks_dict.get("ENG", ""),
-				"math_full": "",
+				"math_full": str(paper_count.get("MATH", 0)*100),
 				"math_mark": marks_dict.get("MATH", ""),
-				"cs_full":   "",
+				"cs_full":   str(paper_count.get("CS", 0)*100),
 				"cs_mark":   marks_dict.get("CS", ""),
 				"sum":       ACS.students[sid].total,
 				"avg":       ACS.students[sid].average,

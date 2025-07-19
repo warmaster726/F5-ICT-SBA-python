@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-import DBS
-import Main
+import DBS, Main
 from datetime import datetime
 
 DARK_BG        = "#2e2e2e"
@@ -139,22 +138,21 @@ class SumAvg:
             return
 
         sid_rows = DBS.sqlrun("SELECT DISTINCT SID FROM Students;", ())
-        global students
-        students = {str(r[0]) : Student(r[0]) for r in sid_rows}
+        self.students = {str(r[0]) : Student(r[0]) for r in sid_rows}
 
         marks = DBS.sqlrun(f"SELECT SID, Mark FROM {tb};", ())
 
         for sid, mark in marks:
-            student = students.get(sid)
+            student = self.students.get(sid)
             if not student:
                 continue
             student.total += mark
             student.count += 1
 
-        for stu in students.values():
+        for stu in self.students.values():
             stu.finalize()
 
-        rank_list = sorted(students.values(), key=lambda item: item.total, reverse=True)
+        rank_list = sorted(self.students.values(), key=lambda item: item.total, reverse=True)
         curr_rank = 0
         rank = 1
         prev_avg = None
@@ -166,10 +164,10 @@ class SumAvg:
             rank += 1
 
         self.output.delete("1.0", tk.END)
-        if not students:
+        if not self.students:
             self.output.insert(tk.END, "No students found.\n")
         else:
-            for stu in students.values():
+            for stu in self.students.values():
                 self.output.insert(tk.END, f"{stu.sid}\t{stu.total}\t{stu.average:.2f}\n")
 
         messagebox.showinfo("Complete", "All calculations are done.")
