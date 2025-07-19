@@ -34,7 +34,7 @@ class F5ICTSBAApp:
         # Header
         tk.Label(
             self.frame,
-            text="EMEAS dev-0.0.31",
+            text="EMEAS beta-0.1.0",
             font=FONT_HEADER,
             bg=PANEL_BG,
             fg=TEXT_FG
