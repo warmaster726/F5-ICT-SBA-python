@@ -138,7 +138,8 @@ class SumAvg:
             return
 
         sid_rows = DBS.sqlrun("SELECT DISTINCT SID FROM Students;", ())
-        students = {r[0] : Student(r[0]) for r in sid_rows}
+        global students
+        students = {str(r[0]) : Student(r[0]) for r in sid_rows}
 
         marks = DBS.sqlrun(f"SELECT SID, Mark FROM {tb};", ())
 

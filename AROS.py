@@ -70,13 +70,10 @@ class ReportGenerator:
 			bg=FRAME_BG, fg=TEXT_FG
 		).grid(row=3, column=0, sticky="e", padx=8, pady=8)
 
-		self.tpl_entry = tk.Entry(
-			self.frame, bg=ENTRY_BG, fg=TEXT_FG,
-			font=FONT_OPTION, relief="flat"
-		)
-		self.tpl_entry.insert(0, "RCTemplate.dotx")
-		self.tpl_entry.configure(state="disabled")
-		self.tpl_entry.grid(row=3, column=1, columnspan=2, sticky="we", padx=8, pady=8)
+		tk.Label(
+			self.frame, text="RCTemplate.dotx", font=FONT_TEXT,
+			bg=FRAME_BG, fg=TEXT_FG
+		).grid(row=3, column=1, columnspan=2, sticky="w", padx=8, pady=8)
 
 		# Action buttons
 		btn_gen = tk.Button(
