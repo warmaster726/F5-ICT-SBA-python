@@ -24,6 +24,7 @@ class Student:
         self.total = 0
         self.count = 0
         self.average = 0.0
+        self.rank = None
 
     def finalize(self):
         if self.count > 0:
@@ -153,6 +154,17 @@ class SumAvg:
         for stu in students.values():
             stu.finalize()
 
+        rank_list = sorted(students.values(), key=lambda item: item.total, reverse=True)
+        curr_rank = 0
+        rank = 1
+        prev_avg = None
+        for stu in rank_list:
+            if prev_avg != stu.average:
+                curr_rank = rank
+                prev_avg = stu.average
+            stu.rank = curr_rank
+            rank += 1
+
         self.output.delete("1.0", tk.END)
         if not students:
             self.output.insert(tk.END, "No students found.\n")
@@ -161,7 +173,6 @@ class SumAvg:
                 self.output.insert(tk.END, f"{stu.sid}\t{stu.total}\t{stu.average:.2f}\n")
 
         messagebox.showinfo("Complete", "All calculations are done.")
-        self.return_to_main()
 
     def return_to_main(self):
         self.frame.destroy()

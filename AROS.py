@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog
 from datetime import datetime
+import DBS, Main, ACS
+import os
+import docxtpl
 
 DARK_BG        = "#2e2e2e"
 FRAME_BG       = DARK_BG
@@ -15,6 +18,14 @@ FONT_LABEL  = ("Segoe UI", 14)
 FONT_BTN    = ("Segoe UI", 14)
 FONT_OPTION = ("Segoe UI", 12)
 FONT_TEXT   = ("Segoe UI", 12)
+
+class SMark:
+	def __init__(self):
+		self.SID = ""
+		self.chimark = 0
+		self.engmark = 0
+		self.mathmark = 0
+		self.csmark = 0
 
 class ReportGenerator:
 	def __init__(self, master):
@@ -109,7 +120,61 @@ class ReportGenerator:
 
 	def _generate_reports(self):
 		self.output.delete("1.0", tk.END)
-		self.output.insert(tk.END, "Report generation logic is not yet implemented.\n")
+		year = self.year_var.get()
+		term = self.term_var.get()
+
+		stu_detail = DBS.sqlrun(
+			"SELECT SID, Class, Name, CNO FROM Students;", 
+			()
+		)
+		if not stu_detail:
+			self.output.insert(tk.END, "No students found in DB.\n")
+			return
+
+		out_dir = filedialog.askdirectory(title="Select output folder")
+		if not out_dir:
+			self.output.insert(tk.END, "No output folder selected.\n")
+			return
+
+		template_path = "RCTemplate.docx"
+		if not os.path.exists(template_path):
+			self.output.insert(tk.END, "Template not found.\n")
+			return
+
+		table_name = f"exam_{year}_{term}"
+		for sid, Class, name, cno in stu_detail:
+			raw_marks = DBS.sqlrun(
+				f"SELECT Subject, Mark FROM {table_name} WHERE SID = ?;",
+				(sid,)
+			) or []
+
+			marks_dict = {subj: mark for subj, mark in raw_marks}
+			count = len(marks_dict)
+			context = {
+				"year":      year,
+				"sname":     name,
+				"class":     Class,
+				"CNO":       cno,
+				"chi_full":  "",
+				"chi_mark":  marks_dict.get("CHIN", ""),
+				"eng_full":  "",
+				"eng_mark":  marks_dict.get("ENG", ""),
+				"math_full": "",
+				"math_mark": marks_dict.get("MATH", ""),
+				"cs_full":   "",
+				"cs_mark":   marks_dict.get("CS", ""),
+				"sum":       ACS.students[sid].total,
+				"avg":       ACS.students[sid].average,
+				"rank":      ACS.students[sid].rank,
+			}
+
+			doc = docxtpl.DocxTemplate(template_path)
+			doc.render(context)
+			fn = f"{sid}_{name}.docx"
+			doc.save(os.path.join(out_dir, fn))
+			self.output.insert(tk.END, f"✓ Generated {fn}\n")
+
+		self.output.insert(tk.END, "All reports generated.\n")
 
 	def _return_to_main(self):
 		self.frame.destroy()
