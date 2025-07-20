@@ -38,6 +38,8 @@ class SumAvg:
         master.title("Calculation Service")
         master.minsize(600, 500)
         master.configure(bg=DARK_BG)
+        global students
+        students = {}
 
         self.frame = tk.Frame(master, bg=FRAME_BG, padx=16, pady=16)
         self.frame.pack(fill="both", expand=True)
@@ -138,21 +140,21 @@ class SumAvg:
             return
 
         sid_rows = DBS.sqlrun("SELECT DISTINCT SID FROM Students;", ())
-        self.students = {str(r[0]) : Student(r[0]) for r in sid_rows}
+        students = {str(r[0]) : Student(r[0]) for r in sid_rows}
 
         marks = DBS.sqlrun(f"SELECT SID, Mark FROM {tb};", ())
 
         for sid, mark in marks:
-            student = self.students.get(sid)
+            student = students.get(sid)
             if not student:
                 continue
             student.total += mark
             student.count += 1
 
-        for stu in self.students.values():
+        for stu in students.values():
             stu.finalize()
 
-        rank_list = sorted(self.students.values(), key=lambda item: item.total, reverse=True)
+        rank_list = sorted(students.values(), key=lambda item: item.total, reverse=True)
         curr_rank = 0
         rank = 1
         prev_avg = None
@@ -164,10 +166,10 @@ class SumAvg:
             rank += 1
 
         self.output.delete("1.0", tk.END)
-        if not self.students:
+        if not students:
             self.output.insert(tk.END, "No students found.\n")
         else:
-            for stu in self.students.values():
+            for stu in students.values():
                 self.output.insert(tk.END, f"{stu.sid}\t{stu.total}\t{stu.average:.2f}\n")
 
         messagebox.showinfo("Complete", "All calculations are done.")

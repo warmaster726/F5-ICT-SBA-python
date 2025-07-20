@@ -34,7 +34,7 @@ class F5ICTSBAApp:
         # Header
         tk.Label(
             self.frame,
-            text="EMEAS beta-0.1.0",
+            text="EMEAS beta-0.1.1",
             font=FONT_HEADER,
             bg=PANEL_BG,
             fg=TEXT_FG
@@ -96,13 +96,12 @@ class F5ICTSBAApp:
         ACS.SumAvg(self.master)
 
     def ReportOut(self):
-        try:
-            if ACS.SumAvg.students:
-                self.frame.destroy()
-                AROS.ReportGenerator(self.master)
-        except:
+        if hasattr(ACS, "students") == False:
             messagebox.showerror("Error", "Please run the calculations first")
             return
+        else:
+            self.frame.destroy()
+            AROS.ReportGenerator(self.master)
 
 class UploadExcelPage:
     def __init__(self, master):
