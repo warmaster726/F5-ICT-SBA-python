@@ -152,8 +152,9 @@ class ReportGenerator:
 				(sid,)
 			) or []
 
-			marks_dict = {subj: mark for subj, mark in raw_marks}
-			count = len(marks_dict)
+			marks_dict = {subj: 0 for subj, mark in raw_marks}
+			for subj, mark in raw_marks:
+				marks_dict[subj] += mark
 			context = {
 				"year":      year,
 				"sname":     name,

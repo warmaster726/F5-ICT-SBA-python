@@ -38,8 +38,6 @@ class SumAvg:
         master.title("Calculation Service")
         master.minsize(600, 500)
         master.configure(bg=DARK_BG)
-        global students
-        students = {}
 
         self.frame = tk.Frame(master, bg=FRAME_BG, padx=16, pady=16)
         self.frame.pack(fill="both", expand=True)
@@ -140,6 +138,7 @@ class SumAvg:
             return
 
         sid_rows = DBS.sqlrun("SELECT DISTINCT SID FROM Students;", ())
+        global students
         students = {str(r[0]) : Student(r[0]) for r in sid_rows}
 
         marks = DBS.sqlrun(f"SELECT SID, Mark FROM {tb};", ())
